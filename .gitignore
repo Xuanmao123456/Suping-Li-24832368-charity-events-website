@@ -1,0 +1,4 @@
+﻿node_modules/
+pylibs/
+*.pyc
+.DS_Store
