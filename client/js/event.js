@@ -1,0 +1,144 @@
+/**
+ * event.js
+ * ------------------------------------------------------------
+ * Reads the ?id= query string from the URL, fetches the event
+ * detail from the API, and renders a full detail page.
+ * Includes a Register button that shows an alert (A2 requirement).
+ * ------------------------------------------------------------
+ */
+
+const container = document.getElementById('event-detail');
+
+document.addEventListener('DOMContentLoaded', loadEventDetail);
+
+function loadEventDetail() {
+  // Read event ID from URL query string: event.html?id=3
+  const params = new URLSearchParams(window.location.search);
+  const eventId = params.get('id');
+
+  if (!eventId) {
+    container.innerHTML = `
+      <div class="error-state">
+        <h3>No event selected</h3>
+        <p>Please choose an event from the <a href="index.html">homepage</a> or <a href="search.html">search page</a>.</p>
+      </div>`;
+    return;
+  }
+
+  fetch(`http://localhost:3000/api/events/${eventId}`)
+    .then(response => {
+      if (response.status === 404) throw new Error('Event not found');
+      if (!response.ok) throw new Error('Server error');
+      return response.json();
+    })
+    .then(result => {
+      if (result.success) {
+        renderDetail(result.data);
+      } else {
+        throw new Error(result.message || 'Failed to load event');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      container.innerHTML = `
+        <div class="error-state">
+          <h3>Event not found</h3>
+          <p>The event you're looking for doesn't exist or has been removed.</p>
+          <p><a href="index.html">← Back to Home</a></p>
+        </div>`;
+    });
+}
+
+function renderDetail(event) {
+  const priceText = event.ticket_price == 0
+    ? 'FREE'
+    : '$' + parseFloat(event.ticket_price).toFixed(2);
+
+  // Progress percentage
+  const goal = parseFloat(event.goal_amount) || 0;
+  const raised = parseFloat(event.raised_amount) || 0;
+  const percent = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
+
+  container.innerHTML = `
+    <img class="detail-image"
+         src="${event.image_url || 'https://via.placeholder.com/900x400?text=Charity+Event'}"
+         alt="${event.title}"
+         onerror="this.src='https://via.placeholder.com/900x400?text=Event'">
+
+    <div class="detail-header">
+      <span class="category-badge" style="background:#fff3e6;color:#e67e22;font-size:0.8rem;font-weight:600;padding:0.3rem 0.8rem;border-radius:20px;">${event.category_name}</span>
+      <h1>${event.title}</h1>
+      <p style="color:#718096;">Organised by <strong>${event.org_name}</strong></p>
+    </div>
+
+    <div class="detail-grid">
+      <div>
+        <div class="detail-section">
+          <h3>About This Event</h3>
+          <p>${event.description}</p>
+        </div>
+
+        <div class="detail-section">
+          <h3>About the Charity</h3>
+          <p>${event.org_description || ''}</p>
+          <p style="margin-top:0.5rem;">
+            📧 ${event.contact_email} &nbsp;|&nbsp; 📞 ${event.phone}
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-section">
+          <h3>Event Details</h3>
+          <p>📅 <strong>Date:</strong> ${formatDate(event.event_date)}</p>
+          <p>🕐 <strong>Time:</strong> ${formatTime(event.start_time)} – ${formatTime(event.end_time)}</p>
+          <p>📍 <strong>Venue:</strong> ${event.location}</p>
+          <p>🏠 <strong>Address:</strong> ${event.address}, ${event.city}</p>
+          <p>🎟️ <strong>Ticket:</strong> <span style="color:#e67e22;font-weight:700;">${priceText}</span></p>
+        </div>
+
+        <div class="detail-section">
+          <h3>Fundraising Goal</h3>
+          <p style="font-size:1.5rem;font-weight:700;color:#1e3a5f;">${percent}%</p>
+          <div class="progress-bar">
+            <div class="fill" style="width:${percent}%;"></div>
+          </div>
+          <p style="margin-top:0.5rem;font-size:0.9rem;color:#718096;">
+            Raised $${formatMoney(raised)} of $${formatMoney(goal)}
+          </p>
+        </div>
+
+        <button class="btn btn-primary register-btn" onclick="registerEvent()">
+          Register Now
+        </button>
+      </div>
+    </div>
+
+    <p style="margin-top:1.5rem;">
+      <a href="javascript:history.back()" style="color:#2c5282;">← Back</a>
+    </p>
+  `;
+}
+
+// Register button — required by A2: show simple alert
+function registerEvent() {
+  alert('This feature is currently under construction.');
+}
+
+function formatDate(dateStr) {
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateStr).toLocaleDateString('en-AU', options);
+}
+
+function formatTime(timeStr) {
+  if (!timeStr) return 'N/A';
+  const [h, m] = timeStr.split(':');
+  const hour = parseInt(h, 10);
+  const suffix = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${m} ${suffix}`;
+}
+
+function formatMoney(n) {
+  return n.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}

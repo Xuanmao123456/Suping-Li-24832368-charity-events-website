@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Events - Charity Events Gold Coast</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">Charity<span>Events</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="search.html" class="active">Search Events</a></li>
+    </ul>
+  </nav>
+
+  <header class="hero">
+    <h1>Find Your Perfect Event</h1>
+    <p>Search by date, location, or category to discover events that inspire you.</p>
+  </header>
+
+  <main class="container">
+
+    <!-- Search Form -->
+    <form id="search-form" class="search-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Event Date</label>
+          <input type="date" id="date" name="date">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location / City</label>
+          <input type="text" id="location" name="location"
+                 placeholder="e.g. Gold Coast, Brisbane...">
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category_id">
+            <option value="">All Categories</option>
+            <!-- options loaded via JS -->
+          </select>
+        </div>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-primary">Search Events</button>
+        <button type="button" id="clear-btn" class="btn btn-secondary">Clear Filters</button>
+      </div>
+    </form>
+
+    <!-- Results -->
+    <h2 class="section-title">Search Results</h2>
+    <div id="results-container">
+      <p class="loading">Use the filters above to find events.</p>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Charity Events Gold Coast | PROG2002 Web Development II</p>
+  </footer>
+
+  <script src="js/search.js"></script>
+</body>
+</html>
