@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage - Charity Events Gold Coast</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">Charity<span>Events</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="search.html">Search Events</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="stories.html">Rescue Stories</a></li>
+      <li><a href="impact.html">Our Impact</a></li>
+      <li><a href="adopt.html">Adopt</a></li>
+      <li><a href="manage.html" class="active">Manage</a></li>
+    </ul>
+  </nav>
+
+  <!-- Page Header -->
+  <div class="page-header" style="background: linear-gradient(135deg, #94a8b8 0%, #b8c9d8 100%); padding: 3.5rem 2rem; text-align: center; color: #fff;">
+    <h1 style="font-size: 2.4rem; margin-bottom: 1rem;">Manage Events & Categories 🛠️</h1>
+    <p style="font-size: 1.05rem; opacity: 0.95; max-width: 700px; margin: 0 auto;">
+      Add new categories and events, or delete the ones you created. Initial data is protected and cannot be removed.
+    </p>
+  </div>
+
+  <main class="container">
+
+    <!-- Add forms -->
+    <div class="manage-forms">
+      <!-- Add Category -->
+      <div class="detail-section section-blue">
+        <h3>➕ Add New Category</h3>
+        <form id="add-category-form" class="manage-form">
+          <div class="form-group">
+            <label for="new-category-name">Category Name *</label>
+            <input type="text" id="new-category-name" placeholder="e.g. Art Exhibition" required>
+          </div>
+          <div class="form-group">
+            <label for="new-category-desc">Description</label>
+            <input type="text" id="new-category-desc" placeholder="Short description of this category">
+          </div>
+          <button type="submit" class="btn btn-primary manage-submit">Add Category</button>
+        </form>
+        <p id="category-form-msg" class="manage-msg"></p>
+      </div>
+
+      <!-- Add Event -->
+      <div class="detail-section section-orange">
+        <h3>➕ Add New Event</h3>
+        <form id="add-event-form" class="manage-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="event-title">Event Title *</label>
+              <input type="text" id="event-title" placeholder="e.g. Beach Cleanup Day" required>
+            </div>
+            <div class="form-group">
+              <label for="event-category">Category *</label>
+              <select id="event-category" required></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="event-date">Date *</label>
+              <input type="date" id="event-date" required>
+            </div>
+            <div class="form-group">
+              <label for="event-city">City</label>
+              <input type="text" id="event-city" placeholder="Gold Coast" value="Gold Coast">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="event-location">Venue / Location *</label>
+              <input type="text" id="event-location" placeholder="e.g. Broadwater Parklands" required>
+            </div>
+            <div class="form-group">
+              <label for="event-price">Ticket Price ($)</label>
+              <input type="number" id="event-price" placeholder="0 = Free" min="0" step="0.01" value="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="event-description">Description *</label>
+            <textarea id="event-description" rows="3" placeholder="Describe the event..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="event-image">Image URL</label>
+            <input type="url" id="event-image" placeholder="https://images.unsplash.com/... (optional)">
+          </div>
+          <button type="submit" class="btn btn-primary manage-submit">Add Event</button>
+        </form>
+        <p id="event-form-msg" class="manage-msg"></p>
+      </div>
+    </div>
+
+    <!-- Categories list -->
+    <h2 class="section-title">Categories</h2>
+    <div id="categories-list" class="manage-list">
+      <p class="loading">Loading categories...</p>
+    </div>
+
+    <!-- Events list -->
+    <h2 class="section-title">All Events</h2>
+    <div id="events-list" class="manage-list">
+      <p class="loading">Loading events...</p>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Charity Events Gold Coast | PROG2002 Web Development II</p>
+  </footer>
+
+  <script src="js/manage.js"></script>
+</body>
+</html>

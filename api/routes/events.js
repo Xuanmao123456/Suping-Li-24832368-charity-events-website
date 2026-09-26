@@ -61,18 +61,29 @@ router.get('/', async (req, res) => {
 });
 
 // ------------------------------------------------------------
-// GET /api/categories
-// Return all categories (used by the search page filter dropdown).
+// GET /api/events/all
+// Management page: return ALL events (any status) with
+// category name, org name and is_custom flag.
 // ------------------------------------------------------------
-router.get('/categories', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT category_id, category_name, description FROM categories ORDER BY category_name'
-    );
+    const [rows] = await pool.query(`
+      SELECT
+        e.event_id, e.title, e.description, e.event_date,
+        e.start_time, e.end_time, e.location, e.address, e.city,
+        e.ticket_price, e.goal_amount, e.raised_amount, e.status,
+        e.image_url, e.is_custom,
+        c.category_id, c.category_name,
+        o.org_id, o.org_name
+      FROM events e
+      JOIN categories c ON e.category_id = c.category_id
+      JOIN organizations o ON e.org_id = o.org_id
+      ORDER BY e.event_date DESC
+    `);
     res.status(200).json({ success: true, count: rows.length, data: rows });
   } catch (err) {
-    console.error('GET /api/categories error:', err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch categories' });
+    console.error('GET /api/events/all error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch all events' });
   }
 });
 
@@ -171,6 +182,74 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error('GET /api/events/:id error:', err.message);
     res.status(500).json({ success: false, message: 'Failed to fetch event details' });
+  }
+});
+
+// ------------------------------------------------------------
+// POST /api/events
+// Add a new custom event (is_custom = 1).
+// ------------------------------------------------------------
+router.post('/', async (req, res) => {
+  try {
+    const {
+      title, description, event_date, start_time, end_time,
+      location, address, city, ticket_price, category_id, org_id,
+      goal_amount, image_url
+    } = req.body;
+
+    // Basic validation
+    if (!title || !description || !event_date || !location || !category_id) {
+      return res.status(400).json({ success: false, message: 'Missing required fields: title, description, event_date, location, category_id' });
+    }
+
+    const [result] = await pool.query(`
+      INSERT INTO events
+        (org_id, category_id, title, description, event_date, start_time, end_time,
+         location, address, city, ticket_price, goal_amount, status, image_url, is_custom)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, 1)
+    `, [
+      org_id || 1, category_id, title, description, event_date,
+      start_time || null, end_time || null, location, address || null,
+      city || 'Gold Coast', ticket_price || 0, goal_amount || 0, image_url || null
+    ]);
+
+    res.status(201).json({
+      success: true,
+      message: 'Event created successfully',
+      data: { event_id: result.insertId, is_custom: 1 }
+    });
+  } catch (err) {
+    console.error('POST /api/events error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to create event' });
+  }
+});
+
+// ------------------------------------------------------------
+// DELETE /api/events/:id
+// Delete an event. Only custom events (is_custom = 1) can be
+// deleted. Initial seed data (is_custom = 0) is protected.
+// ------------------------------------------------------------
+router.delete('/:id', async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id, 10);
+    if (isNaN(eventId) || eventId <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid event ID' });
+    }
+
+    // Check if event exists and whether it is custom
+    const [rows] = await pool.query('SELECT event_id, is_custom FROM events WHERE event_id = ?', [eventId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+    if (rows[0].is_custom === 0) {
+      return res.status(403).json({ success: false, message: 'Initial seed events cannot be deleted' });
+    }
+
+    await pool.query('DELETE FROM events WHERE event_id = ?', [eventId]);
+    res.status(200).json({ success: true, message: 'Event deleted successfully' });
+  } catch (err) {
+    console.error('DELETE /api/events/:id error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to delete event' });
   }
 });
 

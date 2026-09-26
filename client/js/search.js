@@ -120,11 +120,13 @@ function renderResults(events) {
       : '$' + parseFloat(event.ticket_price).toFixed(2);
 
     card.innerHTML = `
-      <img src="${event.image_url || 'https://via.placeholder.com/800x400?text=Charity+Event'}"
-           alt="${event.title}"
-           onerror="this.src='https://via.placeholder.com/800x400?text=Event'">
+      <div class="event-card-image-wrapper">
+        <img src="${event.image_url || 'https://via.placeholder.com/800x400?text=Charity+Event'}"
+             alt="${event.title}"
+             onerror="this.src='https://via.placeholder.com/800x400?text=Event'">
+      </div>
       <div class="event-card-body">
-        <span class="category-badge">${event.category_name}</span>
+        <span class="category-badge ${getCategoryClass(event.category_name)}">${event.category_name}</span>
         <h3>${event.title}</h3>
         <p class="meta">📅 ${formatDate(event.event_date)}</p>
         <p class="meta">📍 ${event.location}, ${event.city}</p>
@@ -163,4 +165,15 @@ function showError(err) {
 function formatDate(dateStr) {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateStr).toLocaleDateString('en-AU', options);
+}
+
+// Map category names to Morandi color badge classes
+function getCategoryClass(categoryName) {
+  const name = categoryName.toLowerCase();
+  if (name.includes('run')) return 'badge-fun-run';
+  if (name.includes('gala')) return 'badge-gala-dinner';
+  if (name.includes('auction')) return 'badge-silent-auction';
+  if (name.includes('concert')) return 'badge-charity-concert';
+  if (name.includes('fair')) return 'badge-community-fair';
+  return 'badge-charity-concert';
 }

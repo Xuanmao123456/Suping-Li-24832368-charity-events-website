@@ -66,19 +66,19 @@ function renderDetail(event) {
          onerror="this.src='https://via.placeholder.com/900x400?text=Event'">
 
     <div class="detail-header">
-      <span class="category-badge" style="background:#fff3e6;color:#e67e22;font-size:0.8rem;font-weight:600;padding:0.3rem 0.8rem;border-radius:20px;">${event.category_name}</span>
+      <span class="category-badge ${getCategoryClass(event.category_name)}">${event.category_name}</span>
       <h1>${event.title}</h1>
-      <p style="color:#718096;">Organised by <strong>${event.org_name}</strong></p>
+      <p style="color:var(--text-light);font-size:1.1rem;">Organised by <strong>${event.org_name}</strong></p>
     </div>
 
     <div class="detail-grid">
       <div>
-        <div class="detail-section">
+        <div class="detail-section section-orange">
           <h3>About This Event</h3>
           <p>${event.description}</p>
         </div>
 
-        <div class="detail-section">
+        <div class="detail-section section-green">
           <h3>About the Charity</h3>
           <p>${event.org_description || ''}</p>
           <p style="margin-top:0.5rem;">
@@ -88,35 +88,40 @@ function renderDetail(event) {
       </div>
 
       <div>
-        <div class="detail-section">
+        <div class="detail-section section-blue">
           <h3>Event Details</h3>
           <p>📅 <strong>Date:</strong> ${formatDate(event.event_date)}</p>
           <p>🕐 <strong>Time:</strong> ${formatTime(event.start_time)} – ${formatTime(event.end_time)}</p>
           <p>📍 <strong>Venue:</strong> ${event.location}</p>
           <p>🏠 <strong>Address:</strong> ${event.address}, ${event.city}</p>
-          <p>🎟️ <strong>Ticket:</strong> <span style="color:#e67e22;font-weight:700;">${priceText}</span></p>
+          <p>🎟️ <strong>Ticket:</strong> <span style="color:#b88469;font-weight:700;font-size:1.1rem;">${priceText}</span></p>
         </div>
-
-        <div class="detail-section">
-          <h3>Fundraising Goal</h3>
-          <p style="font-size:1.5rem;font-weight:700;color:#1e3a5f;">${percent}%</p>
-          <div class="progress-bar">
-            <div class="fill" style="width:${percent}%;"></div>
-          </div>
-          <p style="margin-top:0.5rem;font-size:0.9rem;color:#718096;">
-            Raised $${formatMoney(raised)} of $${formatMoney(goal)}
-          </p>
-        </div>
-
-        <button class="btn btn-primary register-btn" onclick="registerEvent()">
-          Register Now
-        </button>
       </div>
     </div>
 
-    <p style="margin-top:1.5rem;">
-      <a href="javascript:history.back()" style="color:#2c5282;">← Back</a>
-    </p>
+    <!-- Fundraising Goal + Register at bottom -->
+    <div class="bottom-actions">
+      <div class="detail-section fundraising-section section-purple">
+        <h3>Fundraising Goal</h3>
+        <p style="font-size:1.8rem;font-weight:700;color:#b8a9b8;margin-bottom:0.5rem;">${percent}%</p>
+        <div class="progress-bar">
+          <div class="fill" style="width:${percent}%;background:linear-gradient(90deg,#b8a9b8,#94a8b8);"></div>
+        </div>
+        <p style="margin-top:0.5rem;font-size:0.95rem;color:var(--text-light);">
+          Raised $${formatMoney(raised)} of $${formatMoney(goal)}
+        </p>
+      </div>
+
+      <button class="btn btn-register" onclick="registerEvent()">
+        ✨ Register Now ✨
+      </button>
+    </div>
+
+    <div class="back-button-wrapper">
+      <a href="javascript:history.back()" class="back-btn">
+        ← Back to Events
+      </a>
+    </div>
   `;
 }
 
@@ -141,4 +146,15 @@ function formatTime(timeStr) {
 
 function formatMoney(n) {
   return n.toLocaleString('en-AU', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+// Map category names to Morandi color badge classes
+function getCategoryClass(categoryName) {
+  const name = categoryName.toLowerCase();
+  if (name.includes('run')) return 'badge-fun-run';
+  if (name.includes('gala')) return 'badge-gala-dinner';
+  if (name.includes('auction')) return 'badge-silent-auction';
+  if (name.includes('concert')) return 'badge-charity-concert';
+  if (name.includes('fair')) return 'badge-community-fair';
+  return 'badge-charity-concert';
 }

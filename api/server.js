@@ -16,6 +16,7 @@ const express = require('express');
 const cors = require('cors');
 const { testConnection } = require('./event_db');
 const eventsRouter = require('./routes/events');
+const categoriesRouter = require('./routes/categories');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // API Routes
 app.use('/api/events', eventsRouter);
+app.use('/api/categories', categoriesRouter);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -36,7 +38,11 @@ app.get('/', (req, res) => {
       'GET /api/events',
       'GET /api/events/search?date=&location=&category_id=',
       'GET /api/events/:id',
-      'GET /api/categories'
+      'GET /api/categories',
+      'POST /api/events',
+      'DELETE /api/events/:id',
+      'POST /api/categories',
+      'DELETE /api/categories/:id'
     ]
   });
 });
