@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------- Carousel ----------
+// Simple hero carousel: only one slide is visible at a time (CSS shows
+// .active). Auto-advances every 5 seconds; clicking a dot resets the
+// timer so a manual choice is never instantly overridden.
 function initCarousel() {
   const slides = document.querySelectorAll('.carousel-slide');
   const dots = document.querySelectorAll('.carousel-dots .dot');
@@ -158,7 +161,10 @@ function renderEventCards(events) {
         : isCommunityEvent ? COMMUNITY_PHOTOS
         : DOG_PHOTOS;
 
-      // Shuffle the photos so every page load shows a different order
+      // Shuffle the photos so every page load shows a different order.
+      // Fisher–Yates shuffle: iterate backwards and swap each element with
+      // a random earlier one. O(n), unbiased — every order is equally likely,
+      // which keeps the carousel feeling fresh across page reloads.
       const shuffled = [...photos];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -248,7 +254,7 @@ function initMiniCarousel(card) {
       const offsetPct = d * (100 * 5 / 7);   // % of own width (overlap = 2/7)
       const scale = 1 - Math.abs(d) * 0.07; // active=1, neighbours slightly smaller
       const opacity = 1 - Math.abs(d) * 0.14; // neighbours slightly faded
-      const z = 10 - Math.abs(d);
+      const z = 10 - Math.abs(d);            // active sits on top of the fan
 
       img.style.transform =
         `translate(-50%, -50%) translateX(${offsetPct}%) scale(${scale})`;
@@ -276,6 +282,8 @@ function initMiniCarousel(card) {
 }
 
 function formatDate(dateStr) {
+  // en-AU locale renders dates the Australian way (e.g. "Monday, 5 October 2026"),
+  // which matches the Gold Coast / Queensland audience of this site.
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return new Date(dateStr).toLocaleDateString('en-AU', options);
 }

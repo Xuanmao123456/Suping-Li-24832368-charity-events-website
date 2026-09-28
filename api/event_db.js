@@ -10,16 +10,20 @@
 
 const mysql = require('mysql2/promise');
 
-// Create a connection pool (more efficient than a single connection)
+// Create a connection pool instead of a single connection.
+// Why a pool? Opening a fresh MySQL connection for every HTTP request
+// is slow and wasteful. A pool keeps up to 10 connections open and
+// reuses them, so concurrent requests share the same connections and
+// the server stays fast under load.
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '13976973081@Lsp',
   database: 'charityevents_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  namedPlaceholders: true
+  waitForConnections: true,   // if all 10 connections are busy, queue the request instead of failing
+  connectionLimit: 10,        // maximum simultaneous connections to MySQL
+  queueLimit: 0,              // 0 = unlimited queue size (wait as long as needed)
+  namedPlaceholders: true     // allow :name style placeholders in addition to ?
 });
 
 /**

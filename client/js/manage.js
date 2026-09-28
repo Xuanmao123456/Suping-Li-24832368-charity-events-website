@@ -50,6 +50,9 @@ function renderCategories(categories) {
     const item = document.createElement('div');
     item.className = 'manage-item';
 
+    // is_custom tells us the record's origin: 1 = created by the user on
+    // this page (deletable), 0 = initial seed data (protected, no delete
+    // button rendered at all so the option is not even offered).
     const isCustom = cat.is_custom === 1;
     const badge = isCustom
       ? '<span class="manage-badge custom">✨ Custom</span>'
@@ -236,6 +239,9 @@ function addEvent(e) {
 // ------------------------------------------------------------
 // Delete a custom category
 // ------------------------------------------------------------
+// Only custom categories can reach this function — the delete button is
+// only rendered for is_custom === 1. The server double-checks anyway and
+// returns 403 for protected records (defence in depth).
 function deleteCategory(id, name) {
   if (!confirm(`Delete category "${name}"? This cannot be undone.`)) return;
 

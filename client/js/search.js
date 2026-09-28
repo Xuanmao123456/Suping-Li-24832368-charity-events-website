@@ -70,6 +70,9 @@ function handleSearch(e) {
   const categoryId = categorySelect.value;
 
   // Build query string
+  // URLSearchParams only appends filters that are actually filled in,
+  // so an empty form hits GET /api/events (all events) instead of
+  // sending useless empty parameters.
   const params = new URLSearchParams();
   if (date) params.append('date', date);
   if (location) params.append('location', location);

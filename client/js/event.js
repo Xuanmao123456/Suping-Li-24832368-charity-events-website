@@ -54,7 +54,9 @@ function renderDetail(event) {
     ? 'FREE'
     : '$' + parseFloat(event.ticket_price).toFixed(2);
 
-  // Progress percentage
+  // Progress percentage for the fundraising goal bar.
+  // guarded by `goal > 0` so a zero-goal event never divides by zero,
+  // and capped at 100 so a campaign that exceeded its goal still shows full.
   const goal = parseFloat(event.goal_amount) || 0;
   const raised = parseFloat(event.raised_amount) || 0;
   const percent = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
@@ -136,11 +138,12 @@ function formatDate(dateStr) {
 }
 
 function formatTime(timeStr) {
+  // Convert 24-hour "14:30" from the database into a friendly "2:30 PM".
   if (!timeStr) return 'N/A';
   const [h, m] = timeStr.split(':');
   const hour = parseInt(h, 10);
   const suffix = hour >= 12 ? 'PM' : 'AM';
-  const hour12 = hour % 12 || 12;
+  const hour12 = hour % 12 || 12;   // 0 and 12 both display as "12"
   return `${hour12}:${m} ${suffix}`;
 }
 

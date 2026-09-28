@@ -21,7 +21,9 @@ const categoriesRouter = require('./routes/categories');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Middleware — these run for EVERY incoming request, in order.
+// Order matters: cors() and express.json() must come before the routes,
+// otherwise the routes would never see the parsed request body.
 app.use(cors());                       // allow cross-origin from frontend
 app.use(express.json());               // parse JSON request bodies
 app.use(express.urlencoded({ extended: true }));
@@ -47,7 +49,10 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 handler for undefined API routes
+// 404 handler for undefined API routes.
+// Mounted under /api AFTER all real routes: Express matches top-to-bottom,
+// so any /api/* request that no route handled lands here with a clean 404
+// JSON response instead of a confusing HTML "Cannot GET" page.
 app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: 'Endpoint not found' });
 });
